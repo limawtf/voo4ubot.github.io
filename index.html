@@ -763,6 +763,185 @@
             background: var(--text-muted);
             cursor: not-allowed;
         }
+
+        /* Cards de Voos */
+        .flights-container {
+            margin-top: 16px;
+        }
+
+        .flights-loading {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .flights-loading .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid var(--border);
+            border-top-color: var(--accent);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 16px;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .flight-card {
+            background: var(--bg-card);
+            border: 2px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .flight-card:hover {
+            border-color: var(--accent);
+        }
+
+        .flight-card.selected {
+            border-color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+        }
+
+        .flight-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .flight-airline {
+            font-size: 12px;
+            color: var(--text-secondary);
+            font-weight: 500;
+        }
+
+        .flight-number {
+            font-size: 12px;
+            color: var(--text-muted);
+        }
+
+        .flight-route {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+        }
+
+        .flight-point {
+            text-align: center;
+        }
+
+        .flight-time {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+
+        .flight-airport {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .flight-duration {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 11px;
+        }
+
+        .flight-duration-line {
+            width: 60px;
+            height: 1px;
+            background: var(--border);
+            margin: 4px auto;
+            position: relative;
+        }
+
+        .flight-duration-line::after {
+            content: '✈';
+            position: absolute;
+            top: -8px;
+            right: -4px;
+            font-size: 12px;
+        }
+
+        .flight-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 12px;
+            border-top: 1px solid var(--border);
+        }
+
+        .flight-class {
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .flight-stops {
+            font-size: 11px;
+            color: var(--success);
+            background: rgba(34, 197, 94, 0.1);
+            padding: 2px 8px;
+            border-radius: 4px;
+        }
+
+        .flight-stops.has-stops {
+            color: var(--text-muted);
+            background: rgba(100, 116, 139, 0.1);
+        }
+
+        .flight-price {
+            text-align: right;
+        }
+
+        .flight-miles {
+            font-size: 16px;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .flight-fee {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .no-flights {
+            text-align: center;
+            padding: 40px 20px;
+            color: var(--text-secondary);
+        }
+
+        .no-flights-icon {
+            font-size: 48px;
+            margin-bottom: 12px;
+        }
+
+        .search-btn {
+            width: 100%;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .search-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -807,29 +986,23 @@
                         <input type="text" id="destino" class="airport" maxlength="3" placeholder="MIA" autocomplete="off">
                     </div>
                 </div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Data e Horários</div>
-                <div class="form-group">
+                
+                <div class="form-group" style="margin-top: 12px;">
                     <label>Data do Voo</label>
                     <input type="date" id="dataVoo" required>
                 </div>
-                <div class="form-grid" style="margin-top: 12px;">
-                    <div class="form-group">
-                        <label>Horário de Partida</label>
-                        <input type="time" id="horario" value="12:00" required>
-                    </div>
-                    <div class="form-group">
-                        <label>Horário de Chegada</label>
-                        <input type="time" id="horarioChegada" value="18:00" required>
-                    </div>
-                </div>
+
+                <button class="search-btn" onclick="buscarVoos()" id="searchBtn" style="margin-top: 16px;">
+                    🔍 Buscar Voos
+                </button>
             </div>
 
-            <div class="step-nav">
+            <!-- Resultados da Busca -->
+            <div id="flightsContainer" class="flights-container" style="display: none;"></div>
+
+            <div class="step-nav" id="step1Nav" style="display: none;">
                 <button class="step-btn-next" onclick="irParaStep2()" style="flex: 1;">
-                    Continuar →
+                    Continuar com voo selecionado →
                 </button>
             </div>
         </div>
@@ -941,7 +1114,7 @@
         </div>
 
         <div class="resumo-section">
-            <div class="resumo-section-title">🛫 Trecho</div>
+            <div class="resumo-section-title">🛫 Voo Selecionado</div>
             <div class="resumo-trecho">
                 <span class="resumo-trecho-airports">
                     <span id="resumoOrigem">GRU</span>
@@ -949,6 +1122,7 @@
                     <span id="resumoDestino">MIA</span>
                 </span>
                 <div class="resumo-trecho-date" id="resumoDataHora">25/12/2024 às 14:30</div>
+                <div id="resumoVooInfo"></div>
             </div>
         </div>
 
@@ -1047,19 +1221,22 @@
         let paxCount = 1;
         const MAX_PAX = 7;
         let currentStep = 1;
+        let selectedFlight = null;
+        let flightsData = [];
+        
+        const API_URL = 'https://wrapper-api-busca-milhas.onrender.com';
+        const API_KEY = '7e68d283c6f157717fc10b4c226beb261ef83a8d9f2a8178dc511cfc640c320e';
 
-        // ============= NAVEGAÇÃO ENTRE STEPS =============
-        function irParaStep2() {
+        // ============= BUSCA DE VOOS =============
+        async function buscarVoos() {
             clearErrors();
-            let hasError = false;
             
-            // Valida campos do Step 1
             const origem = document.getElementById('origem').value.toUpperCase().trim();
             const destino = document.getElementById('destino').value.toUpperCase().trim();
             const dataVoo = document.getElementById('dataVoo').value;
-            const horario = document.getElementById('horario').value;
-            const horarioChegada = document.getElementById('horarioChegada').value;
             
+            // Validações
+            let hasError = false;
             if (!origem || origem.length !== 3) {
                 showErrorEl(document.getElementById('origem'));
                 hasError = true;
@@ -1072,17 +1249,145 @@
                 showErrorEl(document.getElementById('dataVoo'));
                 hasError = true;
             }
-            if (!horario) {
-                showErrorEl(document.getElementById('horario'));
-                hasError = true;
-            }
-            if (!horarioChegada) {
-                showErrorEl(document.getElementById('horarioChegada'));
-                hasError = true;
-            }
             
             if (hasError) {
                 if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                return;
+            }
+            
+            // Formata data para DD/MM/YYYY
+            const [year, month, day] = dataVoo.split('-');
+            const dataFormatada = `${day}/${month}/${year}`;
+            
+            // Mostra loading
+            const container = document.getElementById('flightsContainer');
+            container.style.display = 'block';
+            container.innerHTML = `
+                <div class="flights-loading">
+                    <div class="spinner"></div>
+                    <p>Buscando voos disponíveis...</p>
+                    <p style="font-size: 11px; margin-top: 8px;">Isso pode levar até 30 segundos</p>
+                </div>
+            `;
+            
+            document.getElementById('searchBtn').disabled = true;
+            document.getElementById('step1Nav').style.display = 'none';
+            selectedFlight = null;
+            
+            try {
+                const response = await fetch(`${API_URL}/api/search`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
+                    },
+                    body: JSON.stringify({
+                        origin: origem,
+                        destination: destino,
+                        date: dataFormatada,
+                        airlines: ['AMERICAN AIRLINES', 'GOL']
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success && data.flights && data.flights.length > 0) {
+                    flightsData = data.flights;
+                    renderFlights(data.flights);
+                    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+                } else {
+                    container.innerHTML = `
+                        <div class="no-flights">
+                            <div class="no-flights-icon">😕</div>
+                            <p>Nenhum voo encontrado</p>
+                            <p style="font-size: 12px; margin-top: 8px;">Tente outra data ou trecho</p>
+                        </div>
+                    `;
+                    if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('warning');
+                }
+            } catch (error) {
+                console.error('Erro na busca:', error);
+                container.innerHTML = `
+                    <div class="no-flights">
+                        <div class="no-flights-icon">❌</div>
+                        <p>Erro ao buscar voos</p>
+                        <p style="font-size: 12px; margin-top: 8px;">Tente novamente</p>
+                    </div>
+                `;
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+            }
+            
+            document.getElementById('searchBtn').disabled = false;
+        }
+        
+        function renderFlights(flights) {
+            const container = document.getElementById('flightsContainer');
+            container.innerHTML = `<div class="card-title" style="margin-bottom: 12px;">✈️ ${flights.length} voos encontrados</div>`;
+            
+            flights.forEach((flight, index) => {
+                const miles = flight.miles && flight.miles[0] ? flight.miles[0].miles : 'N/A';
+                const fee = flight.miles && flight.miles[0] ? flight.miles[0].boardingFee : 0;
+                const stops = flight.connectionsNumber === 0 ? 'Direto' : `${flight.connectionsNumber} conexão`;
+                const stopsClass = flight.connectionsNumber === 0 ? '' : 'has-stops';
+                
+                container.innerHTML += `
+                    <div class="flight-card" onclick="selecionarVoo(${index})" data-index="${index}">
+                        <div class="flight-header">
+                            <span class="flight-airline">${flight.airline}</span>
+                            <span class="flight-number">${flight.flightNumber}</span>
+                        </div>
+                        <div class="flight-route">
+                            <div class="flight-point">
+                                <div class="flight-time">${flight.departure.time}</div>
+                                <div class="flight-airport">${flight.origin}</div>
+                            </div>
+                            <div class="flight-duration">
+                                <div>${flight.duration}</div>
+                                <div class="flight-duration-line"></div>
+                            </div>
+                            <div class="flight-point">
+                                <div class="flight-time">${flight.arrival.time}</div>
+                                <div class="flight-airport">${flight.destination}</div>
+                            </div>
+                        </div>
+                        <div class="flight-footer">
+                            <div>
+                                <span class="flight-class">${flight.class}</span>
+                                <span class="flight-stops ${stopsClass}">${stops}</span>
+                            </div>
+                            <div class="flight-price">
+                                <div class="flight-miles">${miles.toLocaleString()} milhas</div>
+                                <div class="flight-fee">+ R$ ${fee.toFixed(2)} taxa</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+        
+        function selecionarVoo(index) {
+            selectedFlight = flightsData[index];
+            
+            // Remove seleção anterior
+            document.querySelectorAll('.flight-card').forEach(card => {
+                card.classList.remove('selected');
+            });
+            
+            // Marca como selecionado
+            document.querySelector(`.flight-card[data-index="${index}"]`).classList.add('selected');
+            
+            // Mostra botão de continuar
+            document.getElementById('step1Nav').style.display = 'flex';
+            
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.selectionChanged();
+        }
+
+        // ============= NAVEGAÇÃO ENTRE STEPS =============
+        function irParaStep2() {
+            if (!selectedFlight) {
+                const msg = 'Selecione um voo para continuar';
+                if (tg && tg.showAlert) tg.showAlert(msg);
+                else alert(msg);
                 return;
             }
             
@@ -1322,36 +1627,16 @@
             clearErrors();
             let hasError = false;
 
-            // Coleta dados do voo
-            const origem = document.getElementById('origem').value.toUpperCase().trim();
-            const destino = document.getElementById('destino').value.toUpperCase().trim();
-            const dataVoo = document.getElementById('dataVoo').value;
-            const horario = document.getElementById('horario').value;
-            const horarioChegada = document.getElementById('horarioChegada').value;
+            // Usa dados do voo selecionado
+            if (!selectedFlight) {
+                const msg = 'Nenhum voo selecionado';
+                if (tg && tg.showAlert) tg.showAlert(msg);
+                else alert(msg);
+                return;
+            }
+            
             const email = document.getElementById('email').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
-
-            // Validações do voo
-            if (!origem || origem.length !== 3) {
-                showErrorEl(document.getElementById('origem'));
-                hasError = true;
-            }
-            if (!destino || destino.length !== 3) {
-                showErrorEl(document.getElementById('destino'));
-                hasError = true;
-            }
-            if (!dataVoo) {
-                showErrorEl(document.getElementById('dataVoo'));
-                hasError = true;
-            }
-            if (!horario) {
-                showErrorEl(document.getElementById('horario'));
-                hasError = true;
-            }
-            if (!horarioChegada) {
-                showErrorEl(document.getElementById('horarioChegada'));
-                hasError = true;
-            }
             
             // Validações do contato
             if (!email) {
@@ -1411,11 +1696,17 @@
             // Monta objeto de dados
             const dados = {
                 voo: {
-                    origem: origem,
-                    destino: destino,
-                    data: formatDateBR(dataVoo),
-                    horario: horario,
-                    horarioChegada: horarioChegada
+                    origem: selectedFlight.origin,
+                    destino: selectedFlight.destination,
+                    data: selectedFlight.departure.date,
+                    horario: selectedFlight.departure.time,
+                    horarioChegada: selectedFlight.arrival.time,
+                    airline: selectedFlight.airline,
+                    flightNumber: selectedFlight.flightNumber,
+                    duration: selectedFlight.duration,
+                    class: selectedFlight.class,
+                    miles: selectedFlight.miles && selectedFlight.miles[0] ? selectedFlight.miles[0].miles : null,
+                    boardingFee: selectedFlight.miles && selectedFlight.miles[0] ? selectedFlight.miles[0].boardingFee : null
                 },
                 passageiros: passageiros,
                 contato: {
@@ -1439,6 +1730,18 @@
             document.getElementById('resumoOrigem').textContent = dados.voo.origem;
             document.getElementById('resumoDestino').textContent = dados.voo.destino;
             document.getElementById('resumoDataHora').textContent = `${dados.voo.data} • ${dados.voo.horario} → ${dados.voo.horarioChegada}`;
+            
+            // Atualiza seção do voo com mais detalhes
+            const milesText = dados.voo.miles ? `${dados.voo.miles.toLocaleString()} milhas` : '';
+            const feeText = dados.voo.boardingFee ? `+ R$ ${dados.voo.boardingFee.toFixed(2)}` : '';
+            document.getElementById('resumoVooInfo').innerHTML = `
+                <div style="font-size: 12px; color: var(--text-secondary); margin-top: 8px;">
+                    ${dados.voo.airline} • ${dados.voo.flightNumber} • ${dados.voo.class}
+                </div>
+                <div style="font-size: 14px; color: var(--accent); font-weight: 600; margin-top: 4px;">
+                    ${milesText} ${feeText}
+                </div>
+            `;
 
             // Preenche passageiros
             const paxList = document.getElementById('resumoPaxList');
