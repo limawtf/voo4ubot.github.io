@@ -1222,8 +1222,9 @@
         const MAX_PAX = 7;
         let currentStep = 1;
         let selectedFlight = null;
-        // API na VPS (IP público)
-        const API_URL = 'http://203.188.171.138:5001';
+        // API BuscaMilhas
+        const API_URL = 'https://wrapper-api-busca-milhas.onrender.com';
+        const API_KEY = '7e68d283c6f157717fc10b4c226beb261ef83a8d9f2a8178dc511cfc640c320e';
         let flightsData = [];
 
         // ============= BUSCA DE VOOS =============
@@ -1274,10 +1275,13 @@
             selectedFlight = null;
             
             try {
+                console.log('🔍 Buscando:', { origem, destino, dataFormatada, API_URL });
+                
                 const response = await fetch(`${API_URL}/api/search`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${API_KEY}`
                     },
                     body: JSON.stringify({
                         origin: origem,
@@ -1287,7 +1291,9 @@
                     })
                 });
                 
+                console.log('📡 Response status:', response.status);
                 const data = await response.json();
+                console.log('📦 Data:', data);
                 
                 if (data.success && data.flights && data.flights.length > 0) {
                     flightsData = data.flights;
