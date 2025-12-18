@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Emissão de Voo</title>
+    <script src="https://telegram.org/js/telegram-web-app.js"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+        }
+
+        :root {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: rgba(30, 41, 59, 0.8);
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --success: #22c55e;
+            --error: #ef4444;
+            --border: rgba(51, 65, 85, 0.5);
+        }
+
+        body {
+            background: var(--bg-primary);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding: 16px;
+            padding-bottom: 100px;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .header p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 20px;
+            margin-bottom: 16px;
+            backdrop-filter: blur(10px);
+        }
+
+        .card-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-grid.three-cols {
+            grid-template-columns: 1fr 1fr 1fr;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        label {
+            font-size: 11px;
+            font-weight: 500;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            letter-spacing: 0.3px;
+        }
+
+        input, select {
+            background: var(--bg-primary);
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            padding: 12px 14px;
+            font-size: 15px;
+            color: var(--text-primary);
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        input::placeholder {
+            color: var(--text-muted);
+        }
+
+        input.airport {
+            text-transform: uppercase;
+            text-align: center;
+            font-size: 18px;
+            font-weight: 600;
+            letter-spacing: 2px;
+        }
+
+        .route-arrow {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--accent);
+            font-size: 20px;
+            padding-top: 24px;
+        }
+
+        .gender-buttons {
+            display: flex;
+            gap: 8px;
+        }
+
+        .gender-btn {
+            flex: 1;
+            padding: 12px;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            background: var(--bg-primary);
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .gender-btn:hover {
+            border-color: var(--accent);
+        }
+
+        .gender-btn.active {
+            background: var(--accent);
+            border-color: var(--accent);
+            color: white;
+        }
+
+        .submit-area {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, var(--bg-primary) 80%, transparent);
+        }
+
+        .submit-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            border: none;
+            border-radius: 12px;
+            color: white;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .submit-btn:hover {
+            background: var(--accent-hover);
+        }
+
+        .submit-btn:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        .error-msg {
+            color: var(--error);
+            font-size: 11px;
+            margin-top: 4px;
+        }
+
+        .optional-tag {
+            font-size: 9px;
+            color: var(--text-muted);
+            font-weight: normal;
+            margin-left: 4px;
+        }
+
+        /* Animações */
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+
+        .shake {
+            animation: shake 0.3s ease-in-out;
+        }
+
+        input.error {
+            border-color: var(--error);
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>✈️ Nova Emissão</h1>
+        <p>Preencha os dados do voo e passageiro</p>
+    </div>
+
+    <!-- Dados do Voo -->
+    <div class="card">
+        <div class="card-title">🛫 Dados do Voo</div>
+        <div class="form-grid three-cols">
+            <div class="form-group">
+                <label>Origem</label>
+                <input type="text" id="origem" class="airport" maxlength="3" placeholder="GRU" autocomplete="off">
+            </div>
+            <div class="route-arrow">→</div>
+            <div class="form-group">
+                <label>Destino</label>
+                <input type="text" id="destino" class="airport" maxlength="3" placeholder="MIA" autocomplete="off">
+            </div>
+        </div>
+        <div class="form-grid" style="margin-top: 12px;">
+            <div class="form-group">
+                <label>Data do Voo</label>
+                <input type="date" id="dataVoo" required>
+            </div>
+            <div class="form-group">
+                <label>Horário</label>
+                <input type="time" id="horario" value="12:00" required>
+            </div>
+        </div>
+    </div>
+
+    <!-- Dados do Passageiro -->
+    <div class="card">
+        <div class="card-title">👤 Dados do Passageiro</div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Primeiro Nome</label>
+                <input type="text" id="nome" placeholder="JOAO" autocomplete="off" style="text-transform: uppercase;">
+            </div>
+            <div class="form-group">
+                <label>Sobrenome</label>
+                <input type="text" id="sobrenome" placeholder="SILVA" autocomplete="off" style="text-transform: uppercase;">
+            </div>
+        </div>
+        
+        <div class="form-group" style="margin-top: 12px;">
+            <label>Gênero</label>
+            <div class="gender-buttons">
+                <button type="button" class="gender-btn" data-value="M" onclick="selectGender('M')">
+                    👨 Masculino
+                </button>
+                <button type="button" class="gender-btn" data-value="F" onclick="selectGender('F')">
+                    👩 Feminino
+                </button>
+            </div>
+        </div>
+
+        <div class="form-group" style="margin-top: 12px;">
+            <label>Data de Nascimento</label>
+            <input type="date" id="nascimento" required>
+        </div>
+    </div>
+
+    <!-- Contato (Opcional) -->
+    <div class="card">
+        <div class="card-title">📱 Contato <span class="optional-tag">(opcional)</span></div>
+        <div class="form-grid">
+            <div class="form-group">
+                <label>Email</label>
+                <input type="email" id="email" placeholder="email@exemplo.com">
+            </div>
+            <div class="form-group">
+                <label>Telefone</label>
+                <input type="tel" id="telefone" placeholder="+55 11 99999-9999">
+            </div>
+        </div>
+    </div>
+
+    <!-- Botão de Enviar -->
+    <div class="submit-area">
+        <button class="submit-btn" onclick="enviarEmissao()">
+            ✈️ Solicitar Emissão
+        </button>
+    </div>
+
+    <script>
+        // Inicializa o Telegram WebApp
+        const tg = window.Telegram.WebApp;
+        tg.expand();
+        tg.ready();
+
+        // Aplica tema do Telegram
+        if (tg.themeParams.bg_color) {
+            document.documentElement.style.setProperty('--bg-primary', tg.themeParams.bg_color);
+        }
+        if (tg.themeParams.secondary_bg_color) {
+            document.documentElement.style.setProperty('--bg-secondary', tg.themeParams.secondary_bg_color);
+        }
+        if (tg.themeParams.text_color) {
+            document.documentElement.style.setProperty('--text-primary', tg.themeParams.text_color);
+        }
+        if (tg.themeParams.button_color) {
+            document.documentElement.style.setProperty('--accent', tg.themeParams.button_color);
+        }
+
+        // Estado do formulário
+        let selectedGender = null;
+
+        // Define data mínima como hoje
+        const hoje = new Date().toISOString().split('T')[0];
+        document.getElementById('dataVoo').min = hoje;
+        document.getElementById('dataVoo').value = hoje;
+
+        // Converte inputs para uppercase
+        document.querySelectorAll('input[style*="uppercase"]').forEach(input => {
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase();
+            });
+        });
+
+        document.querySelectorAll('.airport').forEach(input => {
+            input.addEventListener('input', (e) => {
+                e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
+            });
+        });
+
+        function selectGender(gender) {
+            selectedGender = gender;
+            document.querySelectorAll('.gender-btn').forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.dataset.value === gender) {
+                    btn.classList.add('active');
+                }
+            });
+        }
+
+        function showError(elementId, message) {
+            const element = document.getElementById(elementId);
+            element.classList.add('error', 'shake');
+            setTimeout(() => {
+                element.classList.remove('shake');
+            }, 300);
+        }
+
+        function clearErrors() {
+            document.querySelectorAll('.error').forEach(el => el.classList.remove('error'));
+        }
+
+        function formatDateBR(dateStr) {
+            // Converte yyyy-mm-dd para dd/mm/yyyy
+            const parts = dateStr.split('-');
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+
+        function enviarEmissao() {
+            clearErrors();
+            let hasError = false;
+
+            // Coleta dados
+            const origem = document.getElementById('origem').value.toUpperCase().trim();
+            const destino = document.getElementById('destino').value.toUpperCase().trim();
+            const dataVoo = document.getElementById('dataVoo').value;
+            const horario = document.getElementById('horario').value;
+            const nome = document.getElementById('nome').value.toUpperCase().trim();
+            const sobrenome = document.getElementById('sobrenome').value.toUpperCase().trim();
+            const nascimento = document.getElementById('nascimento').value;
+            const email = document.getElementById('email').value.trim() || null;
+            const telefone = document.getElementById('telefone').value.trim() || null;
+
+            // Validações
+            if (!origem || origem.length !== 3) {
+                showError('origem');
+                hasError = true;
+            }
+            if (!destino || destino.length !== 3) {
+                showError('destino');
+                hasError = true;
+            }
+            if (!dataVoo) {
+                showError('dataVoo');
+                hasError = true;
+            }
+            if (!horario) {
+                showError('horario');
+                hasError = true;
+            }
+            if (!nome || nome.length < 2) {
+                showError('nome');
+                hasError = true;
+            }
+            if (!sobrenome || sobrenome.length < 2) {
+                showError('sobrenome');
+                hasError = true;
+            }
+            if (!selectedGender) {
+                tg.showAlert('Selecione o gênero do passageiro');
+                return;
+            }
+            if (!nascimento) {
+                showError('nascimento');
+                hasError = true;
+            }
+
+            if (hasError) {
+                tg.HapticFeedback.notificationOccurred('error');
+                return;
+            }
+
+            // Monta objeto de dados
+            const dados = {
+                voo: {
+                    origem: origem,
+                    destino: destino,
+                    data: formatDateBR(dataVoo),
+                    horario: horario
+                },
+                passageiro: {
+                    nome: nome,
+                    sobrenome: sobrenome,
+                    genero: selectedGender,
+                    nascimento: formatDateBR(nascimento),
+                    email: email,
+                    telefone: telefone
+                }
+            };
+
+            // Feedback tátil
+            tg.HapticFeedback.notificationOccurred('success');
+
+            // Envia dados para o bot
+            tg.sendData(JSON.stringify(dados));
+        }
+
+        // Configura o botão principal do Telegram (opcional)
+        tg.MainButton.setText('✈️ Solicitar Emissão');
+        tg.MainButton.onClick(enviarEmissao);
+        // tg.MainButton.show(); // Descomente para usar o botão nativo do Telegram
+    </script>
+</body>
+</html>
