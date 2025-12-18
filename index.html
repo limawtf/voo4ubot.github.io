@@ -732,6 +732,16 @@
             const genero = generoBtn ? generoBtn.dataset.value : null;
             const nascimento = card.querySelector('.pax-nascimento').value;
             
+            // Verifica se está tudo vazio
+            if (!nome && !sobrenome && !genero && !nascimento) {
+                const msg = 'Preencha todos os dados do passageiro atual primeiro';
+                if (tg && tg.showAlert) tg.showAlert(msg);
+                else alert(msg);
+                showErrorEl(card.querySelector('.pax-nome'));
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                return false;
+            }
+            
             let hasError = false;
             
             if (!nome || nome.length < 2) {
@@ -743,9 +753,6 @@
                 hasError = true;
             }
             if (!genero) {
-                const msg = 'Selecione o gênero do passageiro';
-                if (tg && tg.showAlert) tg.showAlert(msg);
-                else alert(msg);
                 hasError = true;
             }
             if (!nascimento) {
