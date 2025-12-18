@@ -1156,6 +1156,118 @@
         </div>
     </div>
 
+    <!-- Tela de Sucesso -->
+    <div class="sucesso-screen" id="sucessoScreen">
+        <div class="sucesso-content">
+            <div class="sucesso-icon">✈️</div>
+            <h2>Emissão Iniciada!</h2>
+            <p class="sucesso-msg">Sua solicitação foi enviada com sucesso.</p>
+            <div class="sucesso-aviso">
+                <p>⏱️ O processo pode levar até <strong>15 minutos</strong></p>
+                <p>Você receberá uma mensagem no chat quando estiver pronto.</p>
+            </div>
+            <div class="sucesso-info">
+                <div class="sucesso-info-row">
+                    <span>✈️ Voo:</span>
+                    <span id="sucessoVoo">GRU → MIA</span>
+                </div>
+                <div class="sucesso-info-row">
+                    <span>📅 Data:</span>
+                    <span id="sucessoData">25/12/2024</span>
+                </div>
+                <div class="sucesso-info-row">
+                    <span>👤 Passageiro:</span>
+                    <span id="sucessoPax">JOAO SILVA</span>
+                </div>
+            </div>
+            <button class="sucesso-btn" onclick="fecharMiniApp()">Fechar</button>
+        </div>
+    </div>
+
+    <style>
+        .sucesso-screen {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 1000;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+        }
+        .sucesso-screen.show {
+            display: flex;
+        }
+        .sucesso-content {
+            max-width: 400px;
+            width: 100%;
+        }
+        .sucesso-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            animation: bounce 0.5s ease;
+        }
+        @keyframes bounce {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-10px); }
+        }
+        .sucesso-screen h2 {
+            color: #4ade80;
+            font-size: 24px;
+            margin-bottom: 8px;
+        }
+        .sucesso-msg {
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+        }
+        .sucesso-aviso {
+            background: rgba(251, 191, 36, 0.1);
+            border: 1px solid rgba(251, 191, 36, 0.3);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .sucesso-aviso p {
+            color: #fbbf24;
+            font-size: 14px;
+            margin: 4px 0;
+        }
+        .sucesso-info {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+        .sucesso-info-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        .sucesso-info-row:last-child {
+            border-bottom: none;
+        }
+        .sucesso-info-row span:first-child {
+            color: var(--text-secondary);
+        }
+        .sucesso-btn {
+            width: 100%;
+            padding: 16px;
+            background: var(--accent);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+    </style>
+
     <script>
         // ============= VALIDAÇÃO DE SESSÃO TELEGRAM =============
         const tg = window.Telegram?.WebApp;
@@ -1822,13 +1934,34 @@
         function confirmarEmissao() {
             const dados = window.dadosEmissao;
             
+            // Atualiza tela de sucesso com dados
+            document.getElementById('sucessoVoo').textContent = `${dados.voo.origem} → ${dados.voo.destino}`;
+            document.getElementById('sucessoData').textContent = `${dados.voo.data} às ${dados.voo.horario}`;
+            const pax = dados.passageiros[0];
+            document.getElementById('sucessoPax').textContent = `${pax.nome} ${pax.sobrenome}`;
+            
+            // Esconde resumo e mostra sucesso
+            document.getElementById('resumoScreen').classList.remove('show');
+            document.getElementById('sucessoScreen').classList.add('show');
+            
+            // Haptic feedback
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+            
             // Envia dados para o bot
             if (tg && tg.sendData) {
                 tg.sendData(JSON.stringify(dados));
             } else {
                 console.log('Dados enviados:', dados);
-                alert('DEBUG: Emissão confirmada (ver console)');
-                voltarDoResumo();
+            }
+        }
+        
+        function fecharMiniApp() {
+            if (tg && tg.close) {
+                tg.close();
+            } else {
+                // Debug mode
+                document.getElementById('sucessoScreen').classList.remove('show');
+                window.location.reload();
             }
         }
 
