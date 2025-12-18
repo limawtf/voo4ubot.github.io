@@ -1182,7 +1182,7 @@
         
         // Aplica bloqueio se não for sessão válida
         // DEBUG: Comentado para testar localmente - REMOVER EM PRODUÇÃO
-        const DEBUG_MODE = true; // Temporário para teste local
+        const DEBUG_MODE = false; // Produção - bloqueio ativo
         
         if (!DEBUG_MODE && !isValidTelegramSession()) {
             document.getElementById('blockedScreen').classList.add('show');
