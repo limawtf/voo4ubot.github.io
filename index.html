@@ -256,6 +256,122 @@
             border-color: var(--error);
         }
 
+        /* Botão adicionar passageiro */
+        .add-pax-btn {
+            width: 100%;
+            padding: 14px;
+            margin-bottom: 16px;
+            background: transparent;
+            border: 2px dashed var(--border);
+            border-radius: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .add-pax-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        .add-pax-btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Botão remover passageiro */
+        .remove-pax-btn {
+            background: transparent;
+            border: none;
+            color: var(--error);
+            font-size: 18px;
+            cursor: pointer;
+            padding: 4px 8px;
+            border-radius: 6px;
+            transition: background 0.2s;
+        }
+
+        .remove-pax-btn:hover {
+            background: rgba(239, 68, 68, 0.1);
+        }
+
+        .passageiro-card {
+            position: relative;
+        }
+
+        /* Card colapsado */
+        .passageiro-card.collapsed .pax-form {
+            display: none;
+        }
+
+        .passageiro-card .pax-summary {
+            display: none;
+        }
+
+        .passageiro-card.collapsed .pax-summary {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            padding: 4px 0;
+        }
+
+        .pax-summary-info {
+            flex: 1;
+        }
+
+        .pax-summary-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 15px;
+        }
+
+        .pax-summary-details {
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 2px;
+        }
+
+        .pax-check {
+            color: var(--success);
+            font-size: 20px;
+        }
+
+        .edit-pax-btn {
+            background: transparent;
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .edit-pax-btn:hover {
+            border-color: var(--accent);
+            color: var(--accent);
+        }
+
+        /* Botão próximo */
+        .next-pax-btn {
+            width: 100%;
+            padding: 12px;
+            margin-top: 12px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .next-pax-btn:hover {
+            background: var(--accent-hover);
+        }
+
         /* ============= RESPONSIVIDADE MOBILE ============= */
         @media (max-width: 400px) {
             body {
@@ -415,61 +531,91 @@
                 <input type="text" id="destino" class="airport" maxlength="3" placeholder="MIA" autocomplete="off">
             </div>
         </div>
-        <div class="form-grid" style="margin-top: 12px;">
+        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 12px;">
             <div class="form-group">
                 <label>Data do Voo</label>
                 <input type="date" id="dataVoo" required>
             </div>
             <div class="form-group">
-                <label>Horário</label>
+                <label>Horário de Partida</label>
                 <input type="time" id="horario" value="12:00" required>
             </div>
         </div>
     </div>
 
-    <!-- Dados do Passageiro -->
-    <div class="card">
-        <div class="card-title">👤 Dados do Passageiro</div>
-        <div class="form-grid">
-            <div class="form-group">
-                <label>Primeiro Nome</label>
-                <input type="text" id="nome" placeholder="JOAO" autocomplete="off" style="text-transform: uppercase;">
+    <!-- Passageiros -->
+    <div id="passageirosContainer">
+        <!-- Passageiro 1 -->
+        <div class="card passageiro-card" data-pax="1">
+            <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                <span>👤 Passageiro 1</span>
             </div>
-            <div class="form-group">
-                <label>Sobrenome</label>
-                <input type="text" id="sobrenome" placeholder="SILVA" autocomplete="off" style="text-transform: uppercase;">
+            
+            <!-- Resumo (quando colapsado) -->
+            <div class="pax-summary">
+                <span class="pax-check">✓</span>
+                <div class="pax-summary-info">
+                    <div class="pax-summary-name"></div>
+                    <div class="pax-summary-details"></div>
+                </div>
+                <button type="button" class="edit-pax-btn" onclick="editarPassageiro(this)">Editar</button>
             </div>
-        </div>
-        
-        <div class="form-group" style="margin-top: 12px;">
-            <label>Gênero</label>
-            <div class="gender-buttons">
-                <button type="button" class="gender-btn" data-value="M" onclick="selectGender('M')">
-                    👨 Masculino
-                </button>
-                <button type="button" class="gender-btn" data-value="F" onclick="selectGender('F')">
-                    👩 Feminino
-                </button>
-            </div>
-        </div>
+            
+            <!-- Formulário -->
+            <div class="pax-form">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Primeiro Nome</label>
+                        <input type="text" class="pax-nome" autocomplete="off" style="text-transform: uppercase;">
+                    </div>
+                    <div class="form-group">
+                        <label>Sobrenome</label>
+                        <input type="text" class="pax-sobrenome" autocomplete="off" style="text-transform: uppercase;">
+                    </div>
+                </div>
 
-        <div class="form-group" style="margin-top: 12px;">
-            <label>Data de Nascimento</label>
-            <input type="date" id="nascimento" required>
+                <div class="form-group" style="margin-top: 12px;">
+                    <label>Data de Nascimento</label>
+                    <input type="date" class="pax-nascimento" required>
+                </div>
+                
+                <div class="form-group" style="margin-top: 12px;">
+                    <label>CPF</label>
+                    <input type="text" class="pax-cpf" autocomplete="off" maxlength="14">
+                </div>
+                
+                <div class="form-group" style="margin-top: 12px;">
+                    <label>Gênero</label>
+                    <div class="gender-buttons">
+                        <button type="button" class="gender-btn pax-genero" data-value="M" onclick="selectGenderPax(this, 'M')">
+                            👨 Masculino
+                        </button>
+                        <button type="button" class="gender-btn pax-genero" data-value="F" onclick="selectGenderPax(this, 'F')">
+                            👩 Feminino
+                        </button>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <!-- Contato (Opcional) -->
+    <!-- Botão Adicionar Passageiro -->
+    <button type="button" class="add-pax-btn" id="addPaxBtn" onclick="adicionarPassageiro()">
+        ➕ Adicionar Passageiro
+    </button>
+
+    <!-- Contato -->
     <div class="card">
-        <div class="card-title">📱 Contato <span class="optional-tag">(opcional)</span></div>
+        <div class="card-title">📱 Contato</div>
+        <p style="font-size: 12px; color: var(--text-secondary); margin-bottom: 12px;">Dados de contato para check in automático na Gol</p>
         <div class="form-grid">
             <div class="form-group">
                 <label>Email</label>
-                <input type="email" id="email" placeholder="email@exemplo.com">
+                <input type="email" id="email">
             </div>
             <div class="form-group">
                 <label>Telefone</label>
-                <input type="tel" id="telefone" placeholder="+55 11 99999-9999">
+                <input type="tel" id="telefone">
             </div>
         </div>
     </div>
@@ -507,12 +653,19 @@
         }
         
         // Aplica bloqueio se não for sessão válida
-        if (!isValidTelegramSession()) {
+        // DEBUG: Comentado para testar localmente - REMOVER EM PRODUÇÃO
+        const DEBUG_MODE = false; // Produção - bloqueio ativo
+        
+        if (!DEBUG_MODE && !isValidTelegramSession()) {
             document.getElementById('blockedScreen').classList.add('show');
             document.getElementById('appContent').classList.add('hidden');
             
             // Para a execução do resto do script
             throw new Error('Acesso não autorizado - fora do Telegram');
+        }
+        
+        if (DEBUG_MODE) {
+            console.log('⚠️ DEBUG MODE ATIVO - Validação do Telegram desabilitada');
         }
         
         // Se chegou aqui, é uma sessão válida do Telegram
@@ -537,42 +690,205 @@
         }
 
         // Estado do formulário
-        let selectedGender = null;
+        let paxCount = 1;
+        const MAX_PAX = 7;
 
         // Define data mínima como hoje
         const hoje = new Date().toISOString().split('T')[0];
         document.getElementById('dataVoo').min = hoje;
         document.getElementById('dataVoo').value = hoje;
 
-        // Converte inputs para uppercase
-        document.querySelectorAll('input[style*="uppercase"]').forEach(input => {
-            input.addEventListener('input', (e) => {
+        // Converte inputs para uppercase e formata CPF (delegação de eventos)
+        document.addEventListener('input', (e) => {
+            if (e.target.style.textTransform === 'uppercase') {
                 e.target.value = e.target.value.toUpperCase();
-            });
-        });
-
-        document.querySelectorAll('.airport').forEach(input => {
-            input.addEventListener('input', (e) => {
+            }
+            if (e.target.classList.contains('airport')) {
                 e.target.value = e.target.value.toUpperCase().replace(/[^A-Z]/g, '');
-            });
+            }
+            // Formata CPF: 000.000.000-00
+            if (e.target.classList.contains('pax-cpf')) {
+                let v = e.target.value.replace(/\D/g, '');
+                if (v.length > 11) v = v.slice(0, 11);
+                if (v.length > 9) v = v.replace(/(\d{3})(\d{3})(\d{3})(\d{1,2})/, '$1.$2.$3-$4');
+                else if (v.length > 6) v = v.replace(/(\d{3})(\d{3})(\d{1,3})/, '$1.$2.$3');
+                else if (v.length > 3) v = v.replace(/(\d{3})(\d{1,3})/, '$1.$2');
+                e.target.value = v;
+            }
         });
 
-        function selectGender(gender) {
-            selectedGender = gender;
-            document.querySelectorAll('.gender-btn').forEach(btn => {
-                btn.classList.remove('active');
-                if (btn.dataset.value === gender) {
-                    btn.classList.add('active');
+        // Seleciona gênero do passageiro
+        function selectGenderPax(btn, gender) {
+            const card = btn.closest('.passageiro-card');
+            card.querySelectorAll('.pax-genero').forEach(b => b.classList.remove('active'));
+            btn.classList.add('active');
+        }
+
+        // Valida e colapsa um passageiro
+        function validarEColapsarPax(card) {
+            const nome = card.querySelector('.pax-nome').value.toUpperCase().trim();
+            const sobrenome = card.querySelector('.pax-sobrenome').value.toUpperCase().trim();
+            const generoBtn = card.querySelector('.pax-genero.active');
+            const genero = generoBtn ? generoBtn.dataset.value : null;
+            const nascimento = card.querySelector('.pax-nascimento').value;
+            
+            let hasError = false;
+            
+            if (!nome || nome.length < 2) {
+                showErrorEl(card.querySelector('.pax-nome'));
+                hasError = true;
+            }
+            if (!sobrenome || sobrenome.length < 2) {
+                showErrorEl(card.querySelector('.pax-sobrenome'));
+                hasError = true;
+            }
+            if (!genero) {
+                const msg = 'Selecione o gênero do passageiro';
+                if (tg && tg.showAlert) tg.showAlert(msg);
+                else alert(msg);
+                hasError = true;
+            }
+            if (!nascimento) {
+                showErrorEl(card.querySelector('.pax-nascimento'));
+                hasError = true;
+            }
+            
+            if (hasError) {
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                return false;
+            }
+            
+            // Atualiza resumo
+            const generoIcon = genero === 'M' ? '👨' : '👩';
+            card.querySelector('.pax-summary-name').textContent = `${nome} ${sobrenome}`;
+            card.querySelector('.pax-summary-details').textContent = `${generoIcon} • ${formatDateBR(nascimento)}`;
+            
+            // Colapsa o card
+            card.classList.add('collapsed');
+            return true;
+        }
+        
+        // Edita passageiro (expande)
+        function editarPassageiro(btn) {
+            const card = btn.closest('.passageiro-card');
+            card.classList.remove('collapsed');
+        }
+
+        // Adiciona novo passageiro
+        function adicionarPassageiro() {
+            if (paxCount >= MAX_PAX) {
+                if (tg && tg.showAlert) {
+                    tg.showAlert('Limite máximo de 7 passageiros atingido');
+                } else {
+                    alert('Limite máximo de 7 passageiros atingido');
                 }
+                return;
+            }
+            
+            // Valida e colapsa o passageiro atual (não colapsado)
+            const cardAtual = document.querySelector('.passageiro-card:not(.collapsed):last-of-type');
+            if (cardAtual && !validarEColapsarPax(cardAtual)) {
+                return; // Não adiciona se validação falhar
+            }
+
+            paxCount++;
+            const container = document.getElementById('passageirosContainer');
+            
+            const newPax = document.createElement('div');
+            newPax.className = 'card passageiro-card';
+            newPax.dataset.pax = paxCount;
+            newPax.innerHTML = `
+                <div class="card-title" style="display: flex; justify-content: space-between; align-items: center;">
+                    <span>👤 Passageiro ${paxCount}</span>
+                    <button type="button" class="remove-pax-btn" onclick="removerPassageiro(this)">✕</button>
+                </div>
+                
+                <!-- Resumo (quando colapsado) -->
+                <div class="pax-summary">
+                    <span class="pax-check">✓</span>
+                    <div class="pax-summary-info">
+                        <div class="pax-summary-name"></div>
+                        <div class="pax-summary-details"></div>
+                    </div>
+                    <button type="button" class="edit-pax-btn" onclick="editarPassageiro(this)">Editar</button>
+                </div>
+                
+                <!-- Formulário -->
+                <div class="pax-form">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label>Primeiro Nome</label>
+                            <input type="text" class="pax-nome" autocomplete="off" style="text-transform: uppercase;">
+                        </div>
+                        <div class="form-group">
+                            <label>Sobrenome</label>
+                            <input type="text" class="pax-sobrenome" autocomplete="off" style="text-transform: uppercase;">
+                        </div>
+                    </div>
+
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>Data de Nascimento</label>
+                        <input type="date" class="pax-nascimento" required>
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>CPF</label>
+                        <input type="text" class="pax-cpf" autocomplete="off" maxlength="14">
+                    </div>
+                    
+                    <div class="form-group" style="margin-top: 12px;">
+                        <label>Gênero</label>
+                        <div class="gender-buttons">
+                            <button type="button" class="gender-btn pax-genero" data-value="M" onclick="selectGenderPax(this, 'M')">
+                                � Masculino
+                            </button>
+                            <button type="button" class="gender-btn pax-genero" data-value="F" onclick="selectGenderPax(this, 'F')">
+                                👩 Feminino
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            `;
+            
+            container.appendChild(newPax);
+            atualizarBotaoAdd();
+            
+            // Scroll para o novo passageiro
+            newPax.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }
+
+        // Remove passageiro
+        function removerPassageiro(btn) {
+            const card = btn.closest('.passageiro-card');
+            card.remove();
+            paxCount--;
+            renumerarPassageiros();
+            atualizarBotaoAdd();
+        }
+
+        // Renumera passageiros após remoção
+        function renumerarPassageiros() {
+            const cards = document.querySelectorAll('.passageiro-card');
+            cards.forEach((card, index) => {
+                const num = index + 1;
+                card.dataset.pax = num;
+                card.querySelector('.card-title span').textContent = `👤 Passageiro ${num}`;
             });
         }
 
-        function showError(elementId, message) {
-            const element = document.getElementById(elementId);
+        // Atualiza visibilidade do botão adicionar
+        function atualizarBotaoAdd() {
+            const btn = document.getElementById('addPaxBtn');
+            if (paxCount >= MAX_PAX) {
+                btn.style.display = 'none';
+            } else {
+                btn.style.display = 'block';
+            }
+        }
+
+        function showErrorEl(element) {
             element.classList.add('error', 'shake');
-            setTimeout(() => {
-                element.classList.remove('shake');
-            }, 300);
+            setTimeout(() => element.classList.remove('shake'), 300);
         }
 
         function clearErrors() {
@@ -580,7 +896,6 @@
         }
 
         function formatDateBR(dateStr) {
-            // Converte yyyy-mm-dd para dd/mm/yyyy
             const parts = dateStr.split('-');
             return `${parts[2]}/${parts[1]}/${parts[0]}`;
         }
@@ -589,53 +904,84 @@
             clearErrors();
             let hasError = false;
 
-            // Coleta dados
+            // Coleta dados do voo
             const origem = document.getElementById('origem').value.toUpperCase().trim();
             const destino = document.getElementById('destino').value.toUpperCase().trim();
             const dataVoo = document.getElementById('dataVoo').value;
             const horario = document.getElementById('horario').value;
-            const nome = document.getElementById('nome').value.toUpperCase().trim();
-            const sobrenome = document.getElementById('sobrenome').value.toUpperCase().trim();
-            const nascimento = document.getElementById('nascimento').value;
-            const email = document.getElementById('email').value.trim() || null;
-            const telefone = document.getElementById('telefone').value.trim() || null;
+            const email = document.getElementById('email').value.trim();
+            const telefone = document.getElementById('telefone').value.trim();
 
-            // Validações
+            // Validações do voo
             if (!origem || origem.length !== 3) {
-                showError('origem');
+                showErrorEl(document.getElementById('origem'));
                 hasError = true;
             }
             if (!destino || destino.length !== 3) {
-                showError('destino');
+                showErrorEl(document.getElementById('destino'));
                 hasError = true;
             }
             if (!dataVoo) {
-                showError('dataVoo');
+                showErrorEl(document.getElementById('dataVoo'));
                 hasError = true;
             }
             if (!horario) {
-                showError('horario');
+                showErrorEl(document.getElementById('horario'));
                 hasError = true;
             }
-            if (!nome || nome.length < 2) {
-                showError('nome');
+            
+            // Validações do contato
+            if (!email) {
+                showErrorEl(document.getElementById('email'));
                 hasError = true;
             }
-            if (!sobrenome || sobrenome.length < 2) {
-                showError('sobrenome');
-                hasError = true;
-            }
-            if (!selectedGender) {
-                tg.showAlert('Selecione o gênero do passageiro');
-                return;
-            }
-            if (!nascimento) {
-                showError('nascimento');
+            if (!telefone) {
+                showErrorEl(document.getElementById('telefone'));
                 hasError = true;
             }
 
+            // Coleta dados dos passageiros
+            const passageiros = [];
+            const cards = document.querySelectorAll('.passageiro-card');
+            
+            cards.forEach((card, index) => {
+                const nome = card.querySelector('.pax-nome').value.toUpperCase().trim();
+                const sobrenome = card.querySelector('.pax-sobrenome').value.toUpperCase().trim();
+                const generoBtn = card.querySelector('.pax-genero.active');
+                const genero = generoBtn ? generoBtn.dataset.value : null;
+                const nascimento = card.querySelector('.pax-nascimento').value;
+                const cpf = card.querySelector('.pax-cpf').value.trim() || null;
+
+                if (!nome || nome.length < 2) {
+                    showErrorEl(card.querySelector('.pax-nome'));
+                    hasError = true;
+                }
+                if (!sobrenome || sobrenome.length < 2) {
+                    showErrorEl(card.querySelector('.pax-sobrenome'));
+                    hasError = true;
+                }
+                if (!genero) {
+                    const msg = `Selecione o gênero do Passageiro ${index + 1}`;
+                    if (tg && tg.showAlert) tg.showAlert(msg);
+                    else alert(msg);
+                    hasError = true;
+                }
+                if (!nascimento) {
+                    showErrorEl(card.querySelector('.pax-nascimento'));
+                    hasError = true;
+                }
+
+                passageiros.push({
+                    nome: nome,
+                    sobrenome: sobrenome,
+                    genero: genero,
+                    nascimento: nascimento ? formatDateBR(nascimento) : null,
+                    cpf: cpf
+                });
+            });
+
             if (hasError) {
-                tg.HapticFeedback.notificationOccurred('error');
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
                 return;
             }
 
@@ -647,26 +993,30 @@
                     data: formatDateBR(dataVoo),
                     horario: horario
                 },
-                passageiro: {
-                    nome: nome,
-                    sobrenome: sobrenome,
-                    genero: selectedGender,
-                    nascimento: formatDateBR(nascimento),
+                passageiros: passageiros,
+                contato: {
                     email: email,
                     telefone: telefone
                 }
             };
 
             // Feedback tátil
-            tg.HapticFeedback.notificationOccurred('success');
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
 
             // Envia dados para o bot
-            tg.sendData(JSON.stringify(dados));
+            if (tg && tg.sendData) {
+                tg.sendData(JSON.stringify(dados));
+            } else {
+                console.log('Dados a enviar:', dados);
+                alert('DEBUG: Dados coletados (ver console)');
+            }
         }
 
         // Configura o botão principal do Telegram (opcional)
-        tg.MainButton.setText('✈️ Solicitar Emissão');
-        tg.MainButton.onClick(enviarEmissao);
+        if (tg && tg.MainButton) {
+            tg.MainButton.setText('✈️ Solicitar Emissão');
+            tg.MainButton.onClick(enviarEmissao);
+        }
         // tg.MainButton.show(); // Descomente para usar o botão nativo do Telegram
     </script>
 </body>
