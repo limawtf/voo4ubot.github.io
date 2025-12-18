@@ -112,10 +112,27 @@
             border: 1px solid var(--border);
             border-radius: 10px;
             padding: 12px 14px;
-            font-size: 15px;
+            font-size: 16px; /* 16px evita zoom no iOS */
             color: var(--text-primary);
             transition: all 0.2s;
             width: 100%;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            appearance: none;
+        }
+
+        /* Fix para inputs no iOS */
+        input[type="date"],
+        input[type="time"] {
+            min-height: 48px;
+            line-height: 1.2;
+        }
+
+        select {
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%2394a3b8' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 12px center;
+            padding-right: 36px;
         }
 
         input:focus, select:focus {
@@ -237,6 +254,64 @@
 
         input.error {
             border-color: var(--error);
+        }
+
+        /* ============= RESPONSIVIDADE MOBILE ============= */
+        @media (max-width: 400px) {
+            body {
+                padding: 12px;
+                padding-bottom: 90px;
+            }
+
+            .card {
+                padding: 16px;
+                border-radius: 12px;
+            }
+
+            .form-grid {
+                grid-template-columns: 1fr;
+                gap: 10px;
+            }
+
+            .form-grid.three-cols {
+                grid-template-columns: 1fr auto 1fr;
+            }
+
+            .route-arrow {
+                padding-top: 20px;
+                font-size: 16px;
+            }
+
+            input.airport {
+                font-size: 16px;
+                letter-spacing: 1px;
+                padding: 10px 8px;
+            }
+
+            .gender-buttons {
+                flex-direction: row;
+            }
+
+            .gender-btn {
+                padding: 10px 8px;
+                font-size: 13px;
+            }
+
+            .submit-btn {
+                padding: 14px;
+                font-size: 15px;
+            }
+        }
+
+        /* Safe area para iPhones com notch */
+        @supports (padding-bottom: env(safe-area-inset-bottom)) {
+            body {
+                padding-bottom: calc(100px + env(safe-area-inset-bottom));
+            }
+
+            .submit-area {
+                padding-bottom: calc(16px + env(safe-area-inset-bottom));
+            }
         }
 
         /* Tela de bloqueio */
