@@ -494,6 +494,181 @@
         .app-content.hidden {
             display: none;
         }
+
+        /* Tela de Resumo/Confirmação */
+        .resumo-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 9998;
+            overflow-y: auto;
+            padding: 16px;
+            padding-bottom: 120px;
+        }
+
+        .resumo-screen.show {
+            display: block;
+        }
+
+        .resumo-header {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .resumo-header h2 {
+            font-size: 18px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .resumo-section {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 12px;
+        }
+
+        .resumo-section-title {
+            font-size: 11px;
+            font-weight: 600;
+            color: var(--text-muted);
+            text-transform: uppercase;
+            margin-bottom: 10px;
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .resumo-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 6px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .resumo-row:last-child {
+            border-bottom: none;
+        }
+
+        .resumo-label {
+            color: var(--text-secondary);
+            font-size: 13px;
+        }
+
+        .resumo-value {
+            color: var(--text-primary);
+            font-size: 13px;
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .resumo-trecho {
+            text-align: center;
+            padding: 12px 0;
+        }
+
+        .resumo-trecho-airports {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--text-primary);
+            letter-spacing: 2px;
+        }
+
+        .resumo-trecho-arrow {
+            color: var(--accent);
+            margin: 0 12px;
+        }
+
+        .resumo-trecho-date {
+            color: var(--text-secondary);
+            font-size: 14px;
+            margin-top: 8px;
+        }
+
+        .resumo-pax-item {
+            padding: 10px 0;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .resumo-pax-item:last-child {
+            border-bottom: none;
+        }
+
+        .resumo-pax-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .resumo-pax-details {
+            color: var(--text-secondary);
+            font-size: 12px;
+            margin-top: 4px;
+        }
+
+        .resumo-saldo {
+            text-align: center;
+            padding: 12px;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 10px;
+            margin-top: 8px;
+        }
+
+        .resumo-saldo-label {
+            font-size: 11px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+        }
+
+        .resumo-saldo-value {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--accent);
+            margin-top: 4px;
+        }
+
+        .resumo-buttons {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, var(--bg-primary) 80%, transparent);
+            display: flex;
+            gap: 12px;
+        }
+
+        .resumo-btn-voltar {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .resumo-btn-confirmar {
+            flex: 2;
+            padding: 14px;
+            background: var(--success);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
@@ -627,6 +802,54 @@
         </button>
     </div>
     </div> <!-- Fecha app-content -->
+
+    <!-- Tela de Resumo/Confirmação -->
+    <div class="resumo-screen" id="resumoScreen">
+        <div class="resumo-header">
+            <h2>📋 Confirmar Emissão</h2>
+        </div>
+
+        <div class="resumo-section">
+            <div class="resumo-section-title">🛫 Trecho</div>
+            <div class="resumo-trecho">
+                <span class="resumo-trecho-airports">
+                    <span id="resumoOrigem">GRU</span>
+                    <span class="resumo-trecho-arrow">→</span>
+                    <span id="resumoDestino">MIA</span>
+                </span>
+                <div class="resumo-trecho-date" id="resumoDataHora">25/12/2024 às 14:30</div>
+            </div>
+        </div>
+
+        <div class="resumo-section">
+            <div class="resumo-section-title">👥 Passageiros (<span id="resumoQtdPax">1</span>)</div>
+            <div id="resumoPaxList"></div>
+        </div>
+
+        <div class="resumo-section">
+            <div class="resumo-section-title">📱 Contato</div>
+            <div class="resumo-row">
+                <span class="resumo-label">Email</span>
+                <span class="resumo-value" id="resumoEmail">email@exemplo.com</span>
+            </div>
+            <div class="resumo-row">
+                <span class="resumo-label">Telefone</span>
+                <span class="resumo-value" id="resumoTelefone">+55 11 99999-9999</span>
+            </div>
+        </div>
+
+        <div class="resumo-section">
+            <div class="resumo-saldo">
+                <div class="resumo-saldo-label">Seu saldo após emissão</div>
+                <div class="resumo-saldo-value" id="resumoSaldo">9 emissões</div>
+            </div>
+        </div>
+
+        <div class="resumo-buttons">
+            <button class="resumo-btn-voltar" onclick="voltarDoResumo()">← Voltar</button>
+            <button class="resumo-btn-confirmar" onclick="confirmarEmissao()">✓ Confirmar</button>
+        </div>
+    </div>
 
     <script>
         // ============= VALIDAÇÃO DE SESSÃO TELEGRAM =============
@@ -1007,15 +1230,67 @@
                 }
             };
 
+            // Salva dados para envio posterior
+            window.dadosEmissao = dados;
+
+            // Mostra tela de resumo
+            mostrarResumo(dados);
+        }
+
+        // Variável para armazenar o limite do usuário
+        let limiteUsuario = 10; // Valor padrão, será atualizado do Telegram
+
+        function mostrarResumo(dados) {
+            // Preenche dados do trecho
+            document.getElementById('resumoOrigem').textContent = dados.voo.origem;
+            document.getElementById('resumoDestino').textContent = dados.voo.destino;
+            document.getElementById('resumoDataHora').textContent = `${dados.voo.data} às ${dados.voo.horario}`;
+
+            // Preenche passageiros
+            const paxList = document.getElementById('resumoPaxList');
+            paxList.innerHTML = '';
+            dados.passageiros.forEach((pax, index) => {
+                const generoIcon = pax.genero === 'M' ? '👨' : '👩';
+                const cpfText = pax.cpf ? ` • CPF: ${pax.cpf}` : '';
+                paxList.innerHTML += `
+                    <div class="resumo-pax-item">
+                        <div class="resumo-pax-name">${index + 1}. ${pax.nome} ${pax.sobrenome}</div>
+                        <div class="resumo-pax-details">${generoIcon} ${pax.genero === 'M' ? 'Masculino' : 'Feminino'} • Nasc: ${pax.nascimento}${cpfText}</div>
+                    </div>
+                `;
+            });
+            document.getElementById('resumoQtdPax').textContent = dados.passageiros.length;
+
+            // Preenche contato
+            document.getElementById('resumoEmail').textContent = dados.contato.email;
+            document.getElementById('resumoTelefone').textContent = dados.contato.telefone;
+
+            // Calcula saldo (qtd passageiros = 1 emissão cada)
+            const emissoes = dados.passageiros.length;
+            const saldoApos = Math.max(0, limiteUsuario - emissoes);
+            document.getElementById('resumoSaldo').textContent = `${saldoApos} emissões`;
+
+            // Mostra tela de resumo
+            document.getElementById('resumoScreen').classList.add('show');
+            
             // Feedback tátil
             if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('success');
+        }
 
+        function voltarDoResumo() {
+            document.getElementById('resumoScreen').classList.remove('show');
+        }
+
+        function confirmarEmissao() {
+            const dados = window.dadosEmissao;
+            
             // Envia dados para o bot
             if (tg && tg.sendData) {
                 tg.sendData(JSON.stringify(dados));
             } else {
-                console.log('Dados a enviar:', dados);
-                alert('DEBUG: Dados coletados (ver console)');
+                console.log('Dados enviados:', dados);
+                alert('DEBUG: Emissão confirmada (ver console)');
+                voltarDoResumo();
             }
         }
 
