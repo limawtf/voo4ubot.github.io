@@ -1222,10 +1222,9 @@
         const MAX_PAX = 7;
         let currentStep = 1;
         let selectedFlight = null;
+        // API na VPS (IP público)
+        const API_URL = 'http://203.188.171.138:5001';
         let flightsData = [];
-        
-        const API_URL = 'https://wrapper-api-busca-milhas.onrender.com';
-        const API_KEY = '7e68d283c6f157717fc10b4c226beb261ef83a8d9f2a8178dc511cfc640c320e';
 
         // ============= BUSCA DE VOOS =============
         async function buscarVoos() {
@@ -1278,8 +1277,7 @@
                 const response = await fetch(`${API_URL}/api/search`, {
                     method: 'POST',
                     headers: {
-                        'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
+                        'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
                         origin: origem,
