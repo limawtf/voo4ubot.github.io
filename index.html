@@ -917,6 +917,142 @@
             color: var(--text-secondary);
         }
 
+        /* Novos estilos para detalhes de voo */
+        .flight-card-main {
+            cursor: pointer;
+        }
+
+        .flight-info-btn {
+            background: transparent;
+            border: none;
+            font-size: 16px;
+            cursor: pointer;
+            padding: 4px;
+            margin-left: auto;
+        }
+
+        .flight-header {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .flight-duration-text {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .flight-stop-dot {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            background: var(--warning);
+            border-radius: 50%;
+            top: -3px;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .flight-stops-label {
+            font-size: 10px;
+            color: var(--success);
+            margin-top: 2px;
+        }
+
+        .flight-stops-label.has-stops {
+            color: var(--warning);
+        }
+
+        .flight-details {
+            display: none;
+            padding: 12px;
+            background: rgba(0,0,0,0.2);
+            border-top: 1px solid var(--border);
+            margin-top: 12px;
+        }
+
+        .flight-details.show {
+            display: block;
+        }
+
+        .details-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: var(--text-secondary);
+            margin-bottom: 12px;
+        }
+
+        .segment-item {
+            padding: 8px 0;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .segment-item:last-child {
+            border-bottom: none;
+        }
+
+        .segment-route {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 4px;
+        }
+
+        .segment-airports {
+            font-size: 13px;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .segment-flight {
+            font-size: 11px;
+            color: var(--text-muted);
+        }
+
+        .segment-times {
+            display: flex;
+            justify-content: space-between;
+            font-size: 12px;
+            color: var(--text-secondary);
+        }
+
+        .segment-duration {
+            color: var(--text-muted);
+        }
+
+        .connections-list {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid rgba(255,255,255,0.1);
+        }
+
+        .connection-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 8px;
+            background: rgba(251, 191, 36, 0.1);
+            border-radius: 8px;
+            margin-bottom: 8px;
+        }
+
+        .connection-airport {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            color: var(--text-primary);
+        }
+
+        .connection-icon {
+            font-size: 14px;
+        }
+
+        .connection-time {
+            font-size: 11px;
+            color: var(--warning);
+            font-weight: 600;
+        }
+
         .no-flights-icon {
             font-size: 48px;
             margin-bottom: 12px;
@@ -1438,42 +1574,111 @@
             flights.forEach((flight, index) => {
                 const miles = flight.miles && flight.miles[0] ? flight.miles[0].miles : 'N/A';
                 const fee = flight.miles && flight.miles[0] ? flight.miles[0].boardingFee : 0;
-                const stops = flight.connectionsNumber === 0 ? 'Direto' : `${flight.connectionsNumber} conexão`;
-                const stopsClass = flight.connectionsNumber === 0 ? '' : 'has-stops';
+                const hasStops = flight.connectionsNumber > 0;
+                const stops = hasStops ? `${flight.connectionsNumber} conexão` : 'Direto';
+                const stopsClass = hasStops ? 'has-stops' : '';
+                
+                // Monta detalhes das conexões
+                let connectionDetails = '';
+                if (hasStops && flight.segments && flight.segments.length > 1) {
+                    connectionDetails = flight.segments.map((seg, i) => {
+                        if (i === flight.segments.length - 1) return '';
+                        const nextSeg = flight.segments[i + 1];
+                        const layoverTime = calcularLayover(seg.arrival.dateTime, nextSeg.departure.dateTime);
+                        return `
+                            <div class="connection-item">
+                                <div class="connection-airport">
+                                    <span class="connection-icon">✈️</span>
+                                    <span>${seg.destination} - ${seg.destinationAirport || seg.destination}</span>
+                                </div>
+                                <div class="connection-time">Conexão: ${layoverTime}</div>
+                            </div>
+                        `;
+                    }).join('');
+                }
+                
+                // Monta segmentos do voo
+                let segmentsHtml = '';
+                if (flight.segments && flight.segments.length > 0) {
+                    segmentsHtml = flight.segments.map(seg => `
+                        <div class="segment-item">
+                            <div class="segment-route">
+                                <span class="segment-airports">${seg.origin} → ${seg.destination}</span>
+                                <span class="segment-flight">${seg.airline} ${seg.flightNumber}</span>
+                            </div>
+                            <div class="segment-times">
+                                <span>${seg.departure.time} - ${seg.arrival.time}</span>
+                                <span class="segment-duration">${seg.duration}</span>
+                            </div>
+                        </div>
+                    `).join('');
+                }
                 
                 container.innerHTML += `
-                    <div class="flight-card" onclick="selecionarVoo(${index})" data-index="${index}">
-                        <div class="flight-header">
-                            <span class="flight-airline">${flight.airline}</span>
-                            <span class="flight-number">${flight.flightNumber}</span>
+                    <div class="flight-card" data-index="${index}">
+                        <div class="flight-card-main" onclick="selecionarVoo(${index})">
+                            <div class="flight-header">
+                                <span class="flight-airline">${flight.airline}</span>
+                                <span class="flight-number">${flight.flightNumber}</span>
+                                ${hasStops ? `<button class="flight-info-btn" onclick="event.stopPropagation(); toggleFlightDetails(${index})">ℹ️</button>` : ''}
+                            </div>
+                            <div class="flight-route">
+                                <div class="flight-point">
+                                    <div class="flight-time">${flight.departure.time}</div>
+                                    <div class="flight-airport">${flight.origin}</div>
+                                </div>
+                                <div class="flight-duration">
+                                    <div class="flight-duration-text">${flight.duration}</div>
+                                    <div class="flight-duration-line">
+                                        ${hasStops ? `<div class="flight-stop-dot" title="${stops}"></div>` : ''}
+                                    </div>
+                                    <div class="flight-stops-label ${stopsClass}">${stops}</div>
+                                </div>
+                                <div class="flight-point">
+                                    <div class="flight-time">${flight.arrival.time}</div>
+                                    <div class="flight-airport">${flight.destination}</div>
+                                </div>
+                            </div>
+                            <div class="flight-footer">
+                                <div>
+                                    <span class="flight-class">${flight.class}</span>
+                                </div>
+                                <div class="flight-price">
+                                    <div class="flight-miles">${miles.toLocaleString()} milhas</div>
+                                    <div class="flight-fee">+ R$ ${fee.toFixed(2)} taxa</div>
+                                </div>
+                            </div>
                         </div>
-                        <div class="flight-route">
-                            <div class="flight-point">
-                                <div class="flight-time">${flight.departure.time}</div>
-                                <div class="flight-airport">${flight.origin}</div>
-                            </div>
-                            <div class="flight-duration">
-                                <div>${flight.duration}</div>
-                                <div class="flight-duration-line"></div>
-                            </div>
-                            <div class="flight-point">
-                                <div class="flight-time">${flight.arrival.time}</div>
-                                <div class="flight-airport">${flight.destination}</div>
-                            </div>
+                        ${hasStops ? `
+                        <div class="flight-details" id="flight-details-${index}">
+                            <div class="details-title">Detalhes do Voo</div>
+                            <div class="segments-list">${segmentsHtml}</div>
+                            ${connectionDetails ? `<div class="connections-list">${connectionDetails}</div>` : ''}
                         </div>
-                        <div class="flight-footer">
-                            <div>
-                                <span class="flight-class">${flight.class}</span>
-                                <span class="flight-stops ${stopsClass}">${stops}</span>
-                            </div>
-                            <div class="flight-price">
-                                <div class="flight-miles">${miles.toLocaleString()} milhas</div>
-                                <div class="flight-fee">+ R$ ${fee.toFixed(2)} taxa</div>
-                            </div>
-                        </div>
+                        ` : ''}
                     </div>
                 `;
             });
+        }
+        
+        function calcularLayover(chegada, partida) {
+            try {
+                const chegadaDate = new Date(chegada);
+                const partidaDate = new Date(partida);
+                const diffMs = partidaDate - chegadaDate;
+                const diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+                const diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                return `${diffHrs}h ${diffMins}min`;
+            } catch (e) {
+                return 'N/A';
+            }
+        }
+        
+        function toggleFlightDetails(index) {
+            const details = document.getElementById(`flight-details-${index}`);
+            if (details) {
+                details.classList.toggle('show');
+            }
         }
         
         function selecionarVoo(index) {
