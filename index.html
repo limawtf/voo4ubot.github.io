@@ -669,6 +669,100 @@
             font-weight: 600;
             cursor: pointer;
         }
+
+        /* Sistema de Steps */
+        .step-screen {
+            display: none;
+        }
+
+        .step-screen.active {
+            display: block;
+        }
+
+        .step-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+
+        .step-header h1 {
+            font-size: 20px;
+            font-weight: 600;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .step-header p {
+            color: var(--text-secondary);
+            font-size: 13px;
+            margin-top: 4px;
+        }
+
+        .step-indicator {
+            display: flex;
+            justify-content: center;
+            gap: 8px;
+            margin-bottom: 20px;
+        }
+
+        .step-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: var(--border);
+            transition: all 0.3s;
+        }
+
+        .step-dot.active {
+            background: var(--accent);
+            width: 24px;
+            border-radius: 4px;
+        }
+
+        .step-dot.completed {
+            background: var(--success);
+        }
+
+        .step-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 16px;
+            background: linear-gradient(to top, var(--bg-primary) 80%, transparent);
+            display: flex;
+            gap: 12px;
+        }
+
+        .step-btn-back {
+            flex: 1;
+            padding: 14px;
+            background: transparent;
+            border: 1px solid var(--border);
+            border-radius: 10px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .step-btn-next {
+            flex: 2;
+            padding: 14px;
+            background: var(--accent);
+            border: none;
+            border-radius: 10px;
+            color: white;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .step-btn-next:disabled {
+            background: var(--text-muted);
+            cursor: not-allowed;
+        }
     </style>
 </head>
 <body>
@@ -687,42 +781,70 @@
     </div>
 
     <div class="app-content" id="appContent">
-        <div class="header">
-            <h1>✈️ Nova Emissão</h1>
-            <p>Preencha os dados do voo e passageiro</p>
+        
+        <!-- STEP 1: Buscar Voo -->
+        <div class="step-screen active" id="step1">
+            <div class="step-indicator">
+                <div class="step-dot active"></div>
+                <div class="step-dot"></div>
+            </div>
+            
+            <div class="step-header">
+                <h1>🛫 Buscar Voo</h1>
+                <p>Informe o trecho e data desejados</p>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Trecho</div>
+                <div class="form-grid three-cols">
+                    <div class="form-group">
+                        <label>Origem</label>
+                        <input type="text" id="origem" class="airport" maxlength="3" placeholder="GRU" autocomplete="off">
+                    </div>
+                    <div class="route-arrow">→</div>
+                    <div class="form-group">
+                        <label>Destino</label>
+                        <input type="text" id="destino" class="airport" maxlength="3" placeholder="MIA" autocomplete="off">
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Data e Horários</div>
+                <div class="form-group">
+                    <label>Data do Voo</label>
+                    <input type="date" id="dataVoo" required>
+                </div>
+                <div class="form-grid" style="margin-top: 12px;">
+                    <div class="form-group">
+                        <label>Horário de Partida</label>
+                        <input type="time" id="horario" value="12:00" required>
+                    </div>
+                    <div class="form-group">
+                        <label>Horário de Chegada</label>
+                        <input type="time" id="horarioChegada" value="18:00" required>
+                    </div>
+                </div>
+            </div>
+
+            <div class="step-nav">
+                <button class="step-btn-next" onclick="irParaStep2()" style="flex: 1;">
+                    Continuar →
+                </button>
+            </div>
         </div>
 
-    <!-- Dados do Voo -->
-    <div class="card">
-        <div class="card-title">🛫 Dados do Voo</div>
-        <div class="form-grid three-cols">
-            <div class="form-group">
-                <label>Origem</label>
-                <input type="text" id="origem" class="airport" maxlength="3" placeholder="GRU" autocomplete="off">
+        <!-- STEP 2: Passageiros e Contato -->
+        <div class="step-screen" id="step2">
+            <div class="step-indicator">
+                <div class="step-dot completed"></div>
+                <div class="step-dot active"></div>
             </div>
-            <div class="route-arrow">→</div>
-            <div class="form-group">
-                <label>Destino</label>
-                <input type="text" id="destino" class="airport" maxlength="3" placeholder="MIA" autocomplete="off">
+            
+            <div class="step-header">
+                <h1>👥 Passageiros</h1>
+                <p>Informe os dados dos passageiros</p>
             </div>
-        </div>
-        <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 12px;">
-            <div class="form-group">
-                <label>Data do Voo</label>
-                <input type="date" id="dataVoo" required>
-            </div>
-            <div class="form-grid">
-                <div class="form-group">
-                    <label>Horário de Partida</label>
-                    <input type="time" id="horario" value="12:00" required>
-                </div>
-                <div class="form-group">
-                    <label>Horário de Chegada</label>
-                    <input type="time" id="horarioChegada" value="18:00" required>
-                </div>
-            </div>
-        </div>
-    </div>
 
     <!-- Passageiros -->
     <div id="passageirosContainer">
@@ -801,12 +923,15 @@
         </div>
     </div>
 
-    <!-- Botão de Enviar -->
-    <div class="submit-area">
-        <button class="submit-btn" onclick="enviarEmissao()">
-            ✈️ Solicitar Emissão
+    <!-- Navegação Step 2 -->
+    <div class="step-nav">
+        <button class="step-btn-back" onclick="voltarParaStep1()">← Voltar</button>
+        <button class="step-btn-next" onclick="enviarEmissao()">
+            Solicitar Emissão →
         </button>
     </div>
+    </div> <!-- Fecha step2 -->
+    
     </div> <!-- Fecha app-content -->
 
     <!-- Tela de Resumo/Confirmação -->
@@ -921,6 +1046,63 @@
         // Estado do formulário
         let paxCount = 1;
         const MAX_PAX = 7;
+        let currentStep = 1;
+
+        // ============= NAVEGAÇÃO ENTRE STEPS =============
+        function irParaStep2() {
+            clearErrors();
+            let hasError = false;
+            
+            // Valida campos do Step 1
+            const origem = document.getElementById('origem').value.toUpperCase().trim();
+            const destino = document.getElementById('destino').value.toUpperCase().trim();
+            const dataVoo = document.getElementById('dataVoo').value;
+            const horario = document.getElementById('horario').value;
+            const horarioChegada = document.getElementById('horarioChegada').value;
+            
+            if (!origem || origem.length !== 3) {
+                showErrorEl(document.getElementById('origem'));
+                hasError = true;
+            }
+            if (!destino || destino.length !== 3) {
+                showErrorEl(document.getElementById('destino'));
+                hasError = true;
+            }
+            if (!dataVoo) {
+                showErrorEl(document.getElementById('dataVoo'));
+                hasError = true;
+            }
+            if (!horario) {
+                showErrorEl(document.getElementById('horario'));
+                hasError = true;
+            }
+            if (!horarioChegada) {
+                showErrorEl(document.getElementById('horarioChegada'));
+                hasError = true;
+            }
+            
+            if (hasError) {
+                if (tg && tg.HapticFeedback) tg.HapticFeedback.notificationOccurred('error');
+                return;
+            }
+            
+            // Troca para Step 2
+            document.getElementById('step1').classList.remove('active');
+            document.getElementById('step2').classList.add('active');
+            currentStep = 2;
+            window.scrollTo(0, 0);
+            
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        }
+
+        function voltarParaStep1() {
+            document.getElementById('step2').classList.remove('active');
+            document.getElementById('step1').classList.add('active');
+            currentStep = 1;
+            window.scrollTo(0, 0);
+            
+            if (tg && tg.HapticFeedback) tg.HapticFeedback.impactOccurred('light');
+        }
 
         // Define data mínima como hoje
         const hoje = new Date().toISOString().split('T')[0];
