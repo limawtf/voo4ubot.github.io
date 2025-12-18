@@ -1161,25 +1161,8 @@
         <div class="sucesso-content">
             <div class="sucesso-icon">✈️</div>
             <h2>Emissão Iniciada!</h2>
-            <p class="sucesso-msg">Sua solicitação foi enviada com sucesso.</p>
-            <div class="sucesso-aviso">
-                <p>⏱️ O processo pode levar até <strong>15 minutos</strong></p>
-                <p>Você receberá uma mensagem no chat quando estiver pronto.</p>
-            </div>
-            <div class="sucesso-info">
-                <div class="sucesso-info-row">
-                    <span>✈️ Voo:</span>
-                    <span id="sucessoVoo">GRU → MIA</span>
-                </div>
-                <div class="sucesso-info-row">
-                    <span>📅 Data:</span>
-                    <span id="sucessoData">25/12/2024</span>
-                </div>
-                <div class="sucesso-info-row">
-                    <span>👤 Passageiro:</span>
-                    <span id="sucessoPax">JOAO SILVA</span>
-                </div>
-            </div>
+            <p class="sucesso-msg">Sua solicitação foi enviada.</p>
+            <p class="sucesso-chat">Acompanhe o status pelo chat.</p>
             <button class="sucesso-btn" onclick="fecharMiniApp()">Fechar</button>
         </div>
     </div>
@@ -1223,37 +1206,12 @@
         }
         .sucesso-msg {
             color: var(--text-secondary);
-            margin-bottom: 24px;
+            margin-bottom: 8px;
         }
-        .sucesso-aviso {
-            background: rgba(251, 191, 36, 0.1);
-            border: 1px solid rgba(251, 191, 36, 0.3);
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 24px;
-        }
-        .sucesso-aviso p {
-            color: #fbbf24;
+        .sucesso-chat {
+            color: #4ade80;
             font-size: 14px;
-            margin: 4px 0;
-        }
-        .sucesso-info {
-            background: var(--bg-secondary);
-            border-radius: 12px;
-            padding: 16px;
             margin-bottom: 24px;
-        }
-        .sucesso-info-row {
-            display: flex;
-            justify-content: space-between;
-            padding: 8px 0;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
-        }
-        .sucesso-info-row:last-child {
-            border-bottom: none;
-        }
-        .sucesso-info-row span:first-child {
-            color: var(--text-secondary);
         }
         .sucesso-btn {
             width: 100%;
@@ -1933,12 +1891,6 @@
 
         function confirmarEmissao() {
             const dados = window.dadosEmissao;
-            
-            // Atualiza tela de sucesso com dados
-            document.getElementById('sucessoVoo').textContent = `${dados.voo.origem} → ${dados.voo.destino}`;
-            document.getElementById('sucessoData').textContent = `${dados.voo.data} às ${dados.voo.horario}`;
-            const pax = dados.passageiros[0];
-            document.getElementById('sucessoPax').textContent = `${pax.nome} ${pax.sobrenome}`;
             
             // Esconde resumo e mostra sucesso
             document.getElementById('resumoScreen').classList.remove('show');
