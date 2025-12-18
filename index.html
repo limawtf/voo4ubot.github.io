@@ -711,9 +711,15 @@
                 <label>Data do Voo</label>
                 <input type="date" id="dataVoo" required>
             </div>
-            <div class="form-group">
-                <label>Horário de Partida</label>
-                <input type="time" id="horario" value="12:00" required>
+            <div class="form-grid">
+                <div class="form-group">
+                    <label>Horário de Partida</label>
+                    <input type="time" id="horario" value="12:00" required>
+                </div>
+                <div class="form-group">
+                    <label>Horário de Chegada</label>
+                    <input type="time" id="horarioChegada" value="18:00" required>
+                </div>
             </div>
         </div>
     </div>
@@ -1139,6 +1145,7 @@
             const destino = document.getElementById('destino').value.toUpperCase().trim();
             const dataVoo = document.getElementById('dataVoo').value;
             const horario = document.getElementById('horario').value;
+            const horarioChegada = document.getElementById('horarioChegada').value;
             const email = document.getElementById('email').value.trim();
             const telefone = document.getElementById('telefone').value.trim();
 
@@ -1157,6 +1164,10 @@
             }
             if (!horario) {
                 showErrorEl(document.getElementById('horario'));
+                hasError = true;
+            }
+            if (!horarioChegada) {
+                showErrorEl(document.getElementById('horarioChegada'));
                 hasError = true;
             }
             
@@ -1221,7 +1232,8 @@
                     origem: origem,
                     destino: destino,
                     data: formatDateBR(dataVoo),
-                    horario: horario
+                    horario: horario,
+                    horarioChegada: horarioChegada
                 },
                 passageiros: passageiros,
                 contato: {
@@ -1244,7 +1256,7 @@
             // Preenche dados do trecho
             document.getElementById('resumoOrigem').textContent = dados.voo.origem;
             document.getElementById('resumoDestino').textContent = dados.voo.destino;
-            document.getElementById('resumoDataHora').textContent = `${dados.voo.data} às ${dados.voo.horario}`;
+            document.getElementById('resumoDataHora').textContent = `${dados.voo.data} • ${dados.voo.horario} → ${dados.voo.horarioChegada}`;
 
             // Preenche passageiros
             const paxList = document.getElementById('resumoPaxList');
