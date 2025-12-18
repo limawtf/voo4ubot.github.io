@@ -238,13 +238,93 @@
         input.error {
             border-color: var(--error);
         }
+
+        /* Tela de bloqueio */
+        .blocked-screen {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--bg-primary);
+            z-index: 9999;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            padding: 32px;
+        }
+
+        .blocked-screen.show {
+            display: flex;
+        }
+
+        .blocked-icon {
+            font-size: 64px;
+            margin-bottom: 24px;
+        }
+
+        .blocked-title {
+            font-size: 24px;
+            font-weight: 700;
+            color: var(--error);
+            margin-bottom: 12px;
+        }
+
+        .blocked-message {
+            font-size: 14px;
+            color: var(--text-secondary);
+            margin-bottom: 24px;
+            line-height: 1.6;
+        }
+
+        .blocked-bot-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 14px 24px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            border-radius: 12px;
+            font-weight: 600;
+            transition: background 0.2s;
+        }
+
+        .blocked-bot-link:hover {
+            background: var(--accent-hover);
+        }
+
+        .app-content {
+            display: block;
+        }
+
+        .app-content.hidden {
+            display: none;
+        }
     </style>
 </head>
 <body>
-    <div class="header">
-        <h1>✈️ Nova Emissão</h1>
-        <p>Preencha os dados do voo e passageiro</p>
+    <!-- Tela de bloqueio para acesso não autorizado -->
+    <div class="blocked-screen" id="blockedScreen">
+        <div class="blocked-icon">🔒</div>
+        <div class="blocked-title">Acesso Bloqueado</div>
+        <div class="blocked-message">
+            Esta página só pode ser acessada<br>
+            através do bot do Telegram.<br><br>
+            Clique no botão abaixo para abrir o bot:
+        </div>
+        <a href="https://t.me/voo4ubot" class="blocked-bot-link">
+            🤖 Abrir Bot no Telegram
+        </a>
     </div>
+
+    <div class="app-content" id="appContent">
+        <div class="header">
+            <h1>✈️ Nova Emissão</h1>
+            <p>Preencha os dados do voo e passageiro</p>
+        </div>
 
     <!-- Dados do Voo -->
     <div class="card">
@@ -325,10 +405,45 @@
             ✈️ Solicitar Emissão
         </button>
     </div>
+    </div> <!-- Fecha app-content -->
 
     <script>
-        // Inicializa o Telegram WebApp
-        const tg = window.Telegram.WebApp;
+        // ============= VALIDAÇÃO DE SESSÃO TELEGRAM =============
+        const tg = window.Telegram?.WebApp;
+        
+        // Verifica se está sendo acessado via Telegram WebApp
+        function isValidTelegramSession() {
+            // Verifica se o objeto Telegram existe
+            if (!window.Telegram || !window.Telegram.WebApp) {
+                return false;
+            }
+            
+            // Verifica se tem initData (dados de autenticação do Telegram)
+            if (!tg.initData || tg.initData === '') {
+                return false;
+            }
+            
+            // Verifica se tem usuário
+            if (!tg.initDataUnsafe || !tg.initDataUnsafe.user) {
+                return false;
+            }
+            
+            return true;
+        }
+        
+        // Aplica bloqueio se não for sessão válida
+        if (!isValidTelegramSession()) {
+            document.getElementById('blockedScreen').classList.add('show');
+            document.getElementById('appContent').classList.add('hidden');
+            
+            // Para a execução do resto do script
+            throw new Error('Acesso não autorizado - fora do Telegram');
+        }
+        
+        // Se chegou aqui, é uma sessão válida do Telegram
+        console.log('✅ Sessão Telegram válida:', tg.initDataUnsafe.user);
+        
+        // Expande o webapp
         tg.expand();
         tg.ready();
 
