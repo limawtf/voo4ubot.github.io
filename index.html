@@ -1306,10 +1306,12 @@
             selectedFlight = null;
             
             try {
+                console.log('=== INICIANDO BUSCA ===');
                 console.log('🔍 Buscando:', { origem, destino, dataFormatada });
                 
                 // Obtém token de parceiro
                 const token = await getPartnerToken();
+                console.log('🎫 Token recebido:', token ? 'OK' : 'FALHOU');
                 
                 const response = await fetch(`${API_URL}/api/search`, {
                     method: 'POST',
