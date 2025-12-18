@@ -1224,8 +1224,39 @@
         let selectedFlight = null;
         // API BuscaMilhas
         const API_URL = 'https://wrapper-api-busca-milhas.onrender.com';
-        const API_KEY = '7e68d283c6f157717fc10b4c226beb261ef83a8d9f2a8178dc511cfc640c320e';
+        const API_SERVICES_URL = 'https://api-services-app-flynomads.onrender.com';
+        const PARTNER_API_KEY = '40771a4c6f36e011db124bd033c9a729f6508b5bda6fa3bae94713819afcd633';
         let flightsData = [];
+        let cachedToken = null;
+        let tokenExpiry = null;
+        
+        // Obtém token de parceiro (com cache de 55 min)
+        async function getPartnerToken() {
+            // Usa token em cache se ainda válido
+            if (cachedToken && tokenExpiry && Date.now() < tokenExpiry) {
+                console.log('🔑 Usando token em cache');
+                return cachedToken;
+            }
+            
+            console.log('🔑 Obtendo novo token...');
+            const response = await fetch(`${API_SERVICES_URL}/api/partner/token`, {
+                method: 'POST',
+                headers: {
+                    'X-Partner-Key': PARTNER_API_KEY
+                }
+            });
+            
+            if (!response.ok) {
+                throw new Error(`Erro ao obter token: ${response.status}`);
+            }
+            
+            const data = await response.json();
+            cachedToken = data.token;
+            // Cache por 55 minutos (token expira em 60)
+            tokenExpiry = Date.now() + (55 * 60 * 1000);
+            console.log('✅ Token obtido');
+            return cachedToken;
+        }
 
         // ============= BUSCA DE VOOS =============
         async function buscarVoos() {
@@ -1275,13 +1306,16 @@
             selectedFlight = null;
             
             try {
-                console.log('🔍 Buscando:', { origem, destino, dataFormatada, API_URL });
+                console.log('🔍 Buscando:', { origem, destino, dataFormatada });
+                
+                // Obtém token de parceiro
+                const token = await getPartnerToken();
                 
                 const response = await fetch(`${API_URL}/api/search`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${API_KEY}`
+                        'Authorization': `Bearer ${token}`
                     },
                     body: JSON.stringify({
                         origin: origem,
